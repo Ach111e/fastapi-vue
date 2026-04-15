@@ -10,11 +10,22 @@ class Users(models.Model):
     modified_at = fields.DatetimeField(auto_now=True)
 
 
+class Tags(models.Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=50, unique=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    modified_at = fields.DatetimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Notes(models.Model):
     id = fields.IntField(pk=True)
     title = fields.CharField(max_length=225)
     content = fields.TextField()
     author = fields.ForeignKeyField("models.Users", related_name="note")
+    tags = fields.ManyToManyField("models.Tags", related_name="notes")
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
 

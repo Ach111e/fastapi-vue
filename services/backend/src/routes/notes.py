@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist
 
@@ -19,8 +19,8 @@ router = APIRouter()
     response_model=List[NoteOutSchema],
     dependencies=[Depends(get_current_user)],
 )
-async def get_notes():
-    return await crud.get_notes()
+async def get_notes(tag_id: Optional[int] = Query(None, description="Filter notes by tag ID")):
+    return await crud.get_notes(tag_id)
 
 
 @router.get(

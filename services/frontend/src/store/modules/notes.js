@@ -15,8 +15,13 @@ const actions = {
     await axios.post('notes', note);
     await dispatch('getNotes');
   },
-  async getNotes({commit}) {
-    let {data} = await axios.get('notes');
+  async getNotes({commit, rootState}) {
+    const selectedTagId = rootState.tags.selectedTagId;
+    let url = 'notes';
+    if (selectedTagId) {
+      url += `?tag_id=${selectedTagId}`;
+    }
+    let {data} = await axios.get(url);
     commit('setNotes', data);
   },
   async viewNote({commit}, id) {
