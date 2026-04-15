@@ -15,6 +15,12 @@ NoteOutSchema = pydantic_model_creator(
 )
 
 
+class NoteCreate(BaseModel):
+    title: str
+    content: str
+    tags: Optional[List[int]] = []
+
+
 class UpdateNote(BaseModel):
     title: Optional[str]
     content: Optional[str]

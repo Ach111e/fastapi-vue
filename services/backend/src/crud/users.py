@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from passlib.context import CryptContext
+from src.auth.users import get_password_hash
 from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from src.database.models import Users
@@ -7,11 +7,11 @@ from src.schemas.token import Status
 from src.schemas.users import UserOutSchema
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 
 async def create_user(user) -> UserOutSchema:
-    user.password = pwd_context.encrypt(user.password)
+    user.password = get_password_hash(user.password)
 
     try:
         user_obj = await Users.create(**user.dict(exclude_unset=True))

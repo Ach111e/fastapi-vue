@@ -6,7 +6,7 @@ from tortoise.exceptions import DoesNotExist
 
 import src.crud.notes as crud
 from src.auth.jwthandler import get_current_user
-from src.schemas.notes import NoteOutSchema, NoteInSchema, UpdateNote
+from src.schemas.notes import NoteOutSchema, NoteInSchema, NoteCreate, UpdateNote
 from src.schemas.token import Status
 from src.schemas.users import UserOutSchema
 
@@ -42,7 +42,7 @@ async def get_note(note_id: int) -> NoteOutSchema:
     "/notes", response_model=NoteOutSchema, dependencies=[Depends(get_current_user)]
 )
 async def create_note(
-    note: NoteInSchema, current_user: UserOutSchema = Depends(get_current_user)
+    note: NoteCreate, current_user: UserOutSchema = Depends(get_current_user)
 ) -> NoteOutSchema:
     return await crud.create_note(note, current_user)
 

@@ -19,9 +19,10 @@ async def get_note(note_id) -> NoteOutSchema:
 async def create_note(note, current_user) -> NoteOutSchema:
     note_dict = note.dict(exclude_unset=True)
     note_dict["author_id"] = current_user.id
-    tags = note_dict.pop("tags", [])
+    tag_ids = note_dict.pop("tags", [])
     note_obj = await Notes.create(**note_dict)
-    if tags:
+    if tag_ids:
+        tags = await Tags.filter(id__in=tag_ids)
         await note_obj.tags.add(*tags)
     return await NoteOutSchema.from_tortoise_orm(note_obj)
 
@@ -34,14 +35,15 @@ async def update_note(note_id, note, current_user) -> NoteOutSchema:
 
     if db_note.author.id == current_user.id:
         note_dict = note.dict(exclude_unset=True)
-        tags = note_dict.pop("tags", None)
+        tag_ids = note_dict.pop("tags", None)
         if note_dict:
             await Notes.filter(id=note_id).update(**note_dict)
         
-        if tags is not None:
+        if tag_ids is not None:
             note_obj = await Notes.get(id=note_id)
             await note_obj.tags.clear()
-            if tags:
+            if tag_ids:
+                tags = await Tags.filter(id__in=tag_ids)
                 await note_obj.tags.add(*tags)
         
         return await NoteOutSchema.from_queryset_single(Notes.get(id=note_id))
